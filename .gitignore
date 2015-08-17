@@ -13,4 +13,5 @@
 /tmp
 
 /node_modules
-/frontend/javascripts/build
+/frontend/javascripts/build/*.map
+/public/assets

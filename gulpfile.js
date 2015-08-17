@@ -7,6 +7,8 @@ var watchify = require('watchify');
 var babelify = require('babelify');
 var pkg = require(__dirname + '/package.json');
 var path = require('path');
+var fs = require('fs-extra');
+
 
 gulp.task('js', function() {
     return compile(false);
@@ -37,7 +39,10 @@ function compile(isUglify, isWatch) {
                 .pipe($.sourcemaps.init({ loadMaps: true }))
                 .pipe($.if(isUglify, $.uglify()))
                 .pipe($.sourcemaps.write('.'))
-                .pipe(gulp.dest("frontend/javascripts/build"));
+                .pipe(gulp.dest("frontend/javascripts/build"))
+                .pipe($.tap(function(){
+                    fs.copySync("frontend/javascripts/build/" + output + ".map", "public/assets/" + output + ".map");
+                }));
         }
         bundler.on('update', bundle);
         return bundle();
