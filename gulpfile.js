@@ -1,20 +1,22 @@
 var gulp = require('gulp');
 var $ = require('gulp-load-plugins')();
 var browserify = require('browserify');
+var watchify = require('watchify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
-var watchify = require('watchify');
 var babelify = require('babelify');
 var pkg = require(__dirname + '/package.json');
 var path = require('path');
+var es = require('event-stream');
 var fs = require('fs-extra');
+var browserSync = require('browser-sync').create();
 
 
 gulp.task('js', function() {
     return compile(false);
 });
 
-gulp.task('js', function() {
+gulp.task('js-release', function() {
     return compile(true);
 });
 
@@ -22,10 +24,15 @@ gulp.task('watchify', function() {
     return compile(false, true);
 });
 
+gulp.task('watch', function() {
+    gulp.watch('frontend/javascripts/src/*.js', ['js']);
+});
+
+
 function compile(isUglify, isWatch) {
     var entries = pkg.browserify.entryScripts;
 
-    entries.map( function(entry) {
+    var tasks = entries.map( function(entry) {
         var extname = path.extname(entry);
         var output = path.basename(entry, extname) + '.js';
         var bundler = null;
@@ -37,6 +44,7 @@ function compile(isUglify, isWatch) {
                 .pipe(source(output))
                 .pipe(buffer())
                 .pipe($.sourcemaps.init({ loadMaps: true }))
+                .pipe($.duration("compiled :" + entry))
                 .pipe($.if(isUglify, $.uglify()))
                 .pipe($.sourcemaps.write('.'))
                 .pipe(gulp.dest("frontend/javascripts/build"))
@@ -47,14 +55,16 @@ function compile(isUglify, isWatch) {
         bundler.on('update', bundle);
         return bundle();
     });
+    es.merge.apply(null, tasks);
 }
 
 function getBundler(entry, isWatch) {
     var bundler = null;
-    options = { debug: true };
+    var options = { debug: true };
     if (isWatch) {
         options.cache = {};
         options.packageCache = {};
+        options.fullPaths = true;
     }
     bundler = browserify(entry, options);
 
