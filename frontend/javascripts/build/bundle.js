@@ -7,7 +7,8 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-console.log('food');
+console.log('foo');
+console.log('bar');
 
 },{"react":"/vagrant/projects/whileyoutube/node_modules/react/react.js"}],"/vagrant/projects/whileyoutube/node_modules/browserify/node_modules/process/browser.js":[function(require,module,exports){
 // shim for using process in browser

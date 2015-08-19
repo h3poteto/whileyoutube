@@ -69,7 +69,7 @@ function getBundler(entry, isWatch) {
     bundler = browserify(entry, options);
 
     if (isWatch) {
-        bundler = watchify(bundler);
+        bundler = watchify(bundler, {poll: true});
     }
 
     bundler.transform(babelify);

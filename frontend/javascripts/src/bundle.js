@@ -1,3 +1,4 @@
 import React from 'react';
 
-console.log('food');
+console.log('foo');
+console.log('bar');
